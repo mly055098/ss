@@ -25,9 +25,15 @@ const MAX_UPLOAD = 5 * 1024 * 1024;
 function dbPathFromEnv() {
   const raw = (process.env.DATABASE_URL || '').trim();
   if (!raw) return path.join(DATA_DIR, 'platform.db');
-  const m = raw.match(/^sqlite:(.*)$/i);
-  if (!m) { console.error('DATABASE_URL يدعم ملفات SQLite فقط، بصيغة مثل sqlite:///var/data/platform.db'); process.exit(1); }
-  let p = m[1].replace(/^\/\//, '').split(/[?#]/)[0];
+  /* مسار عادي بدون بروتوكول (/var/data/platform.db أو ./data/platform.db أو C:\data\platform.db) نقبله كما هو */
+  const plain = /^(\/|\.{1,2}[\\/]|[A-Za-z]:[\\/])/.test(raw) && !/^[a-z][a-z0-9+.-]*:\/\//i.test(raw);
+  const m = plain ? [raw, raw] : raw.match(/^(?:sqlite|file):(.*)$/i);
+  if (!m) {
+    /* قيمة لقاعدة أخرى (مثل postgres:// التي تضعها بعض الاستضافات تلقائياً): لا نوقف التشغيل، نتجاهلها ونستخدم DATA_DIR */
+    console.warn(`تحذير: تم تجاهل DATABASE_URL لأنها ليست ملف SQLite (البروتوكول ${(raw.match(/^([a-z][a-z0-9+.-]*):/i) || [])[1] || 'غير معروف'}). تُستخدم القاعدة في DATA_DIR. لتحديد المسار استخدم sqlite:///var/data/platform.db`);
+    return path.join(DATA_DIR, 'platform.db');
+  }
+  let p = plain ? m[1] : m[1].replace(/^\/\//, '').split(/[?#]/)[0];
   try { p = decodeURIComponent(p); } catch { /* اتركه كما هو */ }
   if (process.platform === 'win32') p = p.replace(/^\/([A-Za-z]:)/, '$1');
   if (!p || /^\/*:memory:$/.test(p)) { console.error('DATABASE_URL يجب أن يحدد مسار ملف، مثل sqlite:///var/data/platform.db'); process.exit(1); }

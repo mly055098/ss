@@ -64,7 +64,7 @@ npm start
 |---|---|
 | `PORT` | المنفذ (الافتراضي 3000) |
 | `DATA_DIR` | مسار القاعدة والمرفقات (الافتراضي `./data`) |
-| `DATABASE_URL` | اختياري: مسار ملف قاعدة SQLite فقط، مثل `sqlite:///var/data/platform.db` (مطلق) أو `sqlite:data/platform.db` (نسبي). يتجاوز مسار القاعدة وحده، والمرفقات تبقى في `DATA_DIR/uploads` |
+| `DATABASE_URL` | اختياري: مسار ملف قاعدة SQLite فقط، مثل `sqlite:///var/data/platform.db` (مطلق) أو `sqlite:data/platform.db` (نسبي). ويُقبل أيضاً مسار عادي مثل `/var/data/platform.db`. قيمة لقاعدة أخرى (مثل `postgres://`) تُتجاهل مع تحذير ولا توقف التشغيل. يتجاوز مسار القاعدة وحده، والمرفقات تبقى في `DATA_DIR/uploads` |
 | `APP_TZ` | المنطقة الزمنية لتحديد «اليوم» (الافتراضي `Asia/Riyadh`) |
 | `SECURE_COOKIES` | اجعله `1` لو الموقع على HTTPS |
 | `TRUST_PROXY` | اجعله `1` لو خلف وسيط (Nginx وغيره) |
